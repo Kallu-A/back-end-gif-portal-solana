@@ -1,0 +1,12 @@
+[programs.devnet]
+gifportal = "9YN2AnKro5ihCfWX6ShbWiopvrUhywUwqDNykzB3Zhn1"
+
+[registry]
+url = "https://anchor.projectserum.com"
+
+[provider]
+cluster = "devnet"
+wallet = "/home/kallu/.config/solana/id.json"
+
+[scripts]
+test = "node tests/gifportal.js"
