@@ -46,28 +46,77 @@ const main = async() => {
 
   await program.rpc.addUpvote("https://media.giphy.com/media/3ornjPteRwwUdSWifC/giphy.gif", provider.wallet.publicKey, {
       accounts: {
-      baseAccount: baseAccount.publicKey,
-      user: provider.wallet.publicKey,
-    },
+        baseAccount: baseAccount.publicKey,
+        user: provider.wallet.publicKey,
+      },
   });
   
   account = await program.account.baseAccount.fetch(baseAccount.publicKey);
   console.log('👀 GIF List', account.gifList)
 
   try {
-    await program.rpc.addUpvote("https://media.giphy.com/mdia/3ornjPteRwwUdSWifC/giphy.gif", provider.wallet.publicKey, {
+    await program.rpc.addUpvote("wronggifdontexist", provider.wallet.publicKey, {
       accounts: {
+        baseAccount: baseAccount.publicKey,
+        user: provider.wallet.publicKey,
+      },
+    });
+    console.log("Oops. error throw not as expected ! ")
+    process.exit(1);
+  } catch( e ) {
+    console.log("Error throw as expected ");
+  }
+
+  await program.rpc.addGif("https://media.giphy.com/media/3ornjPteRwwUdSWifC/giphy2.gif", {
+    accounts: {
       baseAccount: baseAccount.publicKey,
       user: provider.wallet.publicKey,
     },
   });
+
+  try {
+    await program.rpc.addGif("https://media.giphy.com/media/3ornjPteRwwUdSWifC/giphy.gif", {
+      accounts: {
+        baseAccount: baseAccount.publicKey,
+        user: provider.wallet.publicKey,
+      },
+    });
+    console.log("Oops. error throw not as expected ! ")
+    process.exit(1);
+  } catch( e ) {
+    console.log("Error throw as expected ");
+  }
+
+  account = await program.account.baseAccount.fetch(baseAccount.publicKey);
+  console.log('👀 GIF List', account.gifList)
+
+  await program.rpc.removeGif("https://media.giphy.com/media/3ornjPteRwwUdSWifC/giphy.gif", {
+    accounts: {
+      baseAccount: baseAccount.publicKey,
+      user: provider.wallet.publicKey,
+    },
+  });
+  console.log("remove gif");
+  account = await program.account.baseAccount.fetch(baseAccount.publicKey);
+  console.log('👀 GIF List', account.gifList)
+
+  try {
+    await program.rpc.removeGif("https://media.giphy.com/media/3ornjPteRwwUdSWifC/giphy.gif", {
+      accounts: {
+        baseAccount: baseAccount.publicKey,
+        user: provider.wallet.publicKey,
+      },
+    });
+    console.log("Oops. error throw not as expected ! ")
+    process.exit(1);
   } catch( e ) {
     console.log("Error throw as expected ");
   }
 
 
 
-  console.log("🚀 Test working ! ")
+
+  console.log("\n\n🚀 Test working ! ")
 }
 
 const runMain = async () => {

@@ -6,32 +6,36 @@ declare_id!("9YN2AnKro5ihCfWX6ShbWiopvrUhywUwqDNykzB3Zhn1");
 pub mod gifportal {
   use super::*;
 
+  // Initialise the blockchain programm
   pub fn start_stuff_off(ctx: Context<StartStuffOff>) -> ProgramResult {
-    // Get a reference to the account.
     let base_account = &mut ctx.accounts.base_account;
-    // Initialize total_gifs.
     base_account.total_gifs = 0;
     Ok(())
   }
 
-  pub fn add_gif(ctx: Context<AddGif>, gif_link: String) -> ProgramResult {
+  /// Add a gif to the blockchain
+  pub fn add_gif(ctx: Context<UsePortal>, gif_link: String) -> ProgramResult {
     let base_account = &mut ctx.accounts.base_account;
     let user = &mut ctx.accounts.user;
 
-	// Build the struct.
+      //look if gif doesn't already exist
+      if base_account.gif_list.iter().find(|item| item.gif_link == gif_link).is_some() {
+          return Err(ProgramError::InvalidArgument);
+      }
+
     let item = ItemStruct {
       gif_link: gif_link.to_string(),
       user_address: *user.to_account_info().key,
       up_vote: 0
     };
-		
-	// Add it to the gif_list vector.
+
     base_account.gif_list.push(item);
     base_account.total_gifs += 1;
     Ok(())
   }
 
-  pub fn add_upvote(ctx: Context<AddUpVote>, gif_link: String, owner: Pubkey) -> ProgramResult {
+  /// Allow to add upvote to a gif 
+  pub fn add_upvote(ctx: Context<UsePortal>, gif_link: String, owner: Pubkey) -> ProgramResult {
       let base_account = &mut ctx.accounts.base_account;
 
       if let Some(mut gif) = base_account.gif_list.iter_mut().find(
@@ -44,6 +48,23 @@ pub mod gifportal {
       }
   }
 
+  /// Remove the gif of the blockchain only if your are the one who post it
+  pub fn remove_gif(ctx: Context<UsePortal>, gif_link: String) -> ProgramResult {
+    let base_account = &mut ctx.accounts.base_account; 
+
+    if let Some(pos) = base_account.gif_list.iter().position(|item| *item.gif_link == gif_link) {
+      if base_account.gif_list.get(pos).unwrap().user_address == ctx.accounts.user.key() {
+        base_account.gif_list.remove(pos);
+        base_account.total_gifs -= 1;
+        return Ok(());
+      }
+      Err(ProgramError::IllegalOwner)
+  } else {
+    Err(ProgramError::InvalidArgument)
+  }
+
+    
+  }
 }
 
 // Attach certain variables to the StartStuffOff context.
@@ -64,15 +85,7 @@ pub struct BaseAccount {
 }
 
 #[derive(Accounts)]
-pub struct AddGif<'info> {
-  #[account(mut)]
-  pub base_account: Account<'info, BaseAccount>,
-  #[account(mut)]
-  pub user: Signer<'info>,
-}
-
-#[derive(Accounts)]
-pub struct AddUpVote<'info> {
+pub struct UsePortal<'info> {
   #[account(mut)]
   pub base_account: Account<'info, BaseAccount>,
   #[account(mut)]
