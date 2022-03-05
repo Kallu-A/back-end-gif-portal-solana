@@ -1,5 +1,4 @@
 const anchor = require('@project-serum/anchor');
-const assert = require('assert');
 const { SystemProgram } = anchor.web3;
 
 describe('Testing Gif-Portal', () => {
@@ -38,9 +37,6 @@ describe('Testing Gif-Portal', () => {
           user: provider.wallet.publicKey,
         },
     });
-    
-    account = await program.account.baseAccount.fetch(baseAccount.publicKey);
-    assert.ok(account.totalGifs == start + 1);
 
     try {
       await program.rpc.addUpvote("wronggifdontexist", provider.wallet.publicKey, {
@@ -59,9 +55,6 @@ describe('Testing Gif-Portal', () => {
       },
     });
 
-    account = await program.account.baseAccount.fetch(baseAccount.publicKey);
-    assert.ok(account.totalGifs == start + 2);
-
     try {
       await program.rpc.addGif("https://media.giphy.com/media/3ornjPteRwwUdSWifC/giphy.gif", {
         accounts: {
@@ -78,9 +71,6 @@ describe('Testing Gif-Portal', () => {
         user: provider.wallet.publicKey,
       },
     });
-
-    account = await program.account.baseAccount.fetch(baseAccount.publicKey);
-    assert.ok(account.totalGifs == start + 1);
 
     try {
       await program.rpc.removeGif("https://media.giphy.com/media/3ornjPteRwwUdSWifC/giphy.gif", {
