@@ -22,6 +22,7 @@ describe('Testing Gif-Portal', () => {
     });
   
     account = await program.account.baseAccount.fetch(baseAccount.publicKey);
+    let start = account.totalGifs;
 
     // You'll need to now pass a GIF link to the function! You'll also need to pass in the user submitting the GIF!
     await program.rpc.addGif("https://media.giphy.com/media/3ornjPteRwwUdSWifC/giphy.gif", {
@@ -39,7 +40,7 @@ describe('Testing Gif-Portal', () => {
     });
     
     account = await program.account.baseAccount.fetch(baseAccount.publicKey);
-    assert.ok(account.totalGifs == 1);
+    assert.ok(account.totalGifs == start + 1);
 
     try {
       await program.rpc.addUpvote("wronggifdontexist", provider.wallet.publicKey, {
@@ -59,7 +60,7 @@ describe('Testing Gif-Portal', () => {
     });
 
     account = await program.account.baseAccount.fetch(baseAccount.publicKey);
-    assert.ok(account.totalGifs == 2);
+    assert.ok(account.totalGifs == start + 2);
 
     try {
       await program.rpc.addGif("https://media.giphy.com/media/3ornjPteRwwUdSWifC/giphy.gif", {
@@ -79,7 +80,7 @@ describe('Testing Gif-Portal', () => {
     });
 
     account = await program.account.baseAccount.fetch(baseAccount.publicKey);
-    assert.ok(account.totalGifs == 1);
+    assert.ok(account.totalGifs == start + 1);
 
     try {
       await program.rpc.removeGif("https://media.giphy.com/media/3ornjPteRwwUdSWifC/giphy.gif", {
