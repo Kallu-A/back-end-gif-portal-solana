@@ -9,4 +9,4 @@ cluster = "devnet"
 wallet = "/home/kallu/.config/solana/id.json"
 
 [scripts]
-test = "node tests/gifportal.js"
+test = "yarn run mocha -t 1000000 tests/gifportal.js"
